@@ -1,4 +1,4 @@
 --extra-index-url https://download.pytorch.org/whl/cu128
 av
 torch
-nvidia-vfx==1.2.0.0
+nvidia-vfx==0.1.0.0
