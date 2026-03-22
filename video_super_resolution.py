@@ -75,7 +75,6 @@ def avframe_to_rgb_float(frame: av.VideoFrame, gpu: int) -> torch.Tensor:
     tensor = tensor.permute(2, 0, 1).float() / 255.0  # (3, H, W) float32
     return tensor.contiguous()
 
-
 def main():
     args = parse_args()
 
@@ -112,6 +111,12 @@ def main():
     input_height = input_stream.codec_context.height
     total_frames = input_stream.frames or 0
     fps = float(input_stream.average_rate) if input_stream.average_rate else 0.0
+    if input_stream.frames:
+        total_frames = input_stream.frames
+    elif fps and input_container.duration:
+        total_frames = int( input_container.duration / 1,000,000 * fps)
+    else:
+        total_frames = 0
 
     output_width = input_width * args.scale
     output_height = input_height * args.scale
@@ -186,7 +191,7 @@ def main():
         processed += 1
         if processed % 100 == 0:
             ep_time = time.time() - segment_start_time
-            print( f"Processed frame: {processed} current speed: {100/ep_time:.2f} fps")
+            print( f"Processed frame: {processed} / {total_frames} current speed: {100/ep_time:.2f} fps")
             segment_start_time = time.time()
 
     for packet in video_stream.encode(None):
