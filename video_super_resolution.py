@@ -114,7 +114,7 @@ def main():
     if input_stream.frames:
         total_frames = input_stream.frames
     elif fps and input_container.duration:
-        total_frames = int( input_container.duration / 1,000,000 * fps)
+        total_frames = int( input_container.duration / 1000000 * fps )
     else:
         total_frames = 0
 
@@ -191,7 +191,8 @@ def main():
         processed += 1
         if processed % 100 == 0:
             ep_time = time.time() - segment_start_time
-            print( f"Processed frame: {processed} / {total_frames} current speed: {100/ep_time:.2f} fps")
+            remain_seconds = (time.time()-start_time) / processed * ( total_frames - processed) 
+            print( f"Processed frame: {processed} / {total_frames} current speed: {100/ep_time:.2f} fps, elasped seconds: {time.time()-start_time:.2f}, remain seconds: {remain_seconds:.2f} ")
             segment_start_time = time.time()
 
     for packet in video_stream.encode(None):
