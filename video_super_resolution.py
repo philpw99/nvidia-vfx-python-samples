@@ -167,7 +167,7 @@ def main():
     else:
         print("Processing frames...")
     start_time = time.time()
-
+    segment_start_time = start_time
     processed = 0
     for frame in input_container.decode(input_stream):
         rgb_input = avframe_to_rgb_float(frame, gpu)
@@ -184,6 +184,10 @@ def main():
         for packet in video_stream.encode(out_frame):
             output_container.mux(packet)
         processed += 1
+        if processed % 100 == 0:
+            ep_time = time.time() - segment_start_time
+            print( f"Processed frame: {processed} current speed: {100/ep_time} fps")
+            segment_start_time = time.time()
 
     for packet in video_stream.encode(None):
         output_container.mux(packet)
